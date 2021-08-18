@@ -8,7 +8,7 @@ export const errorHandler = (
   next: NextFunction
 ) => {
   if (err instanceof CustomError) {
-    console.log("err :>> ", err);
+    console.error("err :>> ", err.message);
     return res
       .status(err.statusCode)
       .jsonp({ errors: err.serializeErrors(), statusCode: err.statusCode });
