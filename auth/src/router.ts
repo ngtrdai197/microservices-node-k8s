@@ -1,5 +1,5 @@
 import express from "express";
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 import { AuthService } from "./services/auth.service";
 
 export default class AuthRouter {
@@ -18,12 +18,10 @@ export default class AuthRouter {
 
   private initRouter(): void {
     this.router.get(
-      "/currentUser",
-      (_: express.Request, response: express.Response) => {
-        return response
-          .status(200)
-          .json({ name: "Dai Nguyen", email: "dainguyen.iammm@gmail.com" });
-      }
+      "/currentUser/:email",
+      [param("email").isEmail().notEmpty()],
+      (request: express.Request, response: express.Response) =>
+        AuthService.getInstance().currentUser(request, response)
     );
     this.router.post(
       "/signIn",
@@ -31,11 +29,18 @@ export default class AuthRouter {
       (request: express.Request, response: express.Response) =>
         AuthService.getInstance().signIn(request, response)
     );
-    this.router.get(
-      "/signOut",
-      (_: express.Request, response: express.Response) => {
-        return response.status(200).json({ msg: "Sign out" });
-      }
+    this.router.post(
+      "/signup",
+      [
+        body("email")
+          .isEmail()
+          .withMessage("Email is invalid")
+          .trim()
+          .notEmpty(),
+        body("password").isLength({ min: 6, max: 32 }).trim().notEmpty(),
+      ],
+      (request: express.Request, response: express.Response) =>
+        AuthService.getInstance().signUp(request, response)
     );
   }
 }
