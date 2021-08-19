@@ -1,8 +1,13 @@
 FROM node:alpine
 
+ENV NODE_ENV=development
+
 WORKDIR /app
-COPY package.json ./
+
+COPY ["package.json", "package-lock.json*", "./"]
+
 RUN npm install
-COPY ./ ./
+
+COPY . .
 
 CMD ["npm", "start"]

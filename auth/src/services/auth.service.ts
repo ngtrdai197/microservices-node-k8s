@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import { validationResult } from "express-validator";
-import { ConflictRequestError } from "../../errors/conflict-request.error";
-import { NotFoundError } from "../../errors/not-found.error";
-import { RequestValidationError } from "../../errors/request-validation.error";
-import { User } from "../models/user.model";
+import { ConflictRequestError } from "../errors/conflict-request.error";
+import { userModel } from "../models/user.model";
+import * as jwt from "jsonwebtoken";
+import { BadRequestError } from "../errors/bad-request.error";
+import { CryptoUtil } from "../utils/crypto.util";
+import { IUserDoc, IUserPayload } from "../interfaces/user.interface";
 
 export class AuthService {
   private static instance: AuthService;
@@ -16,37 +17,43 @@ export class AuthService {
     return AuthService.instance;
   }
 
-  public async currentUser(req: Request, res: Response) {
-    const user = await User.findOne({ email: req.params.email });
-    if (!user) {
-      throw new NotFoundError("User does not exist. Plz check again.");
-    }
-    return res.status(200).json({ data: user }).end();
+  public async getUserById(userId: string): Promise<IUserDoc | null> {
+    return userModel.findById(userId);
   }
 
   public async signIn(req: Request, res: Response) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new RequestValidationError(errors.array());
+    const user = await userModel.findOne({ email: req.body.email });
+    if (!user) {
+      throw new BadRequestError("Credentials is incorrect !");
     }
-    return res.status(200).json({ msg: "Sign in" }).end();
+    const isEqual = await CryptoUtil.compare(user.password, req.body.password);
+    if (!isEqual) {
+      throw new BadRequestError("Credentials is incorrect !");
+    }
+    console.log("process.env.JWT_SECRET_KEY :>> ", process.env.JWT_SECRET_KEY);
+    const payload: IUserPayload = {
+      id: user._id,
+      email: user.email,
+    };
+    const token = await jwt.sign(payload, process.env.JWT_SECRET_KEY!, {
+      expiresIn: "1h",
+    });
+    return res.status(200).json({ statusCode: 200, data: token }).end();
   }
 
   public async signUp(req: Request, res: Response) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new RequestValidationError(errors.array());
-    }
-    const exist = await User.findOne({ email: req.body.email });
+    const exist = await userModel.findOne({ email: req.body.email });
     if (exist) {
       throw new ConflictRequestError(
         "Email already exist. Plz use another email."
       );
     }
-    const user = await User.build({
-      email: req.body.email,
-      password: req.body.password,
-    }).save();
+    const user = await userModel
+      .build({
+        email: req.body.email,
+        password: req.body.password,
+      })
+      .save();
     return res.status(200).json({ data: user }).end();
   }
 }

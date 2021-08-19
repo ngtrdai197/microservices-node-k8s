@@ -7,8 +7,8 @@ import "express-async-errors";
 import { json } from "body-parser";
 import mongoose from "mongoose";
 import AuthRouter from "./router";
-import { errorHandler } from "../middlewares/error-handler";
-import { DatabaseConnectionError } from "../errors/database.error";
+import { errorHandler } from "./middlewares/error-handler";
+import { DatabaseConnectionError } from "./errors/database.error";
 
 export default class ServerSetup {
   private app!: express.Express;

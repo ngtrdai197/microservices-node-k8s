@@ -1,9 +1,12 @@
-import express from "express";
-import { body, param } from "express-validator";
+import { IRouter, Request, Response, Router } from "express";
+import { body } from "express-validator";
+import { IRequest } from "./interfaces/common.interface";
+import { authGuardMiddleware } from "./middlewares/auth-guard.middleware";
+import { validateRequestHandler } from "./middlewares/validate-request-handler";
 import { AuthService } from "./services/auth.service";
 
 export default class AuthRouter {
-  public readonly router: express.IRouter = express.Router();
+  public readonly router: IRouter = Router();
   private static instance: AuthRouter;
   constructor() {
     this.initRouter();
@@ -18,15 +21,30 @@ export default class AuthRouter {
 
   private initRouter(): void {
     this.router.get(
-      "/currentUser/:email",
-      [param("email").isEmail().notEmpty()],
-      (request: express.Request, response: express.Response) =>
-        AuthService.getInstance().currentUser(request, response)
+      "/currentuser",
+      [authGuardMiddleware],
+      (request: IRequest, response: Response) => {
+        return response
+          .status(200)
+          .json({ data: request.user || null, statusCode: 200 });
+      }
     );
     this.router.post(
-      "/signIn",
-      [body("email").isEmail(), body("password").isLength({ min: 6, max: 32 })],
-      (request: express.Request, response: express.Response) =>
+      "/signin",
+      [
+        body("email")
+          .isEmail()
+          .withMessage("Email is invalid")
+          .notEmpty()
+          .withMessage("You must supply an email"),
+        body("password")
+          .notEmpty()
+          .withMessage("You must supply a password")
+          .isLength({ min: 6, max: 32 })
+          .withMessage("Length of password is invalid"),
+      ],
+      [validateRequestHandler],
+      (request: Request, response: Response) =>
         AuthService.getInstance().signIn(request, response)
     );
     this.router.post(
@@ -39,7 +57,8 @@ export default class AuthRouter {
           .notEmpty(),
         body("password").isLength({ min: 6, max: 32 }).trim().notEmpty(),
       ],
-      (request: express.Request, response: express.Response) =>
+      [validateRequestHandler],
+      (request: Request, response: Response) =>
         AuthService.getInstance().signUp(request, response)
     );
   }
