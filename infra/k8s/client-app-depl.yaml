@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-app-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client-app
+  template:
+    metadata:
+      labels:
+        app: client-app
+    spec:
+      containers:
+        - name: client-app
+          image: ngtrdai197/microservices_ticketing_client_app
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-app-clusterip-srv
+spec:
+  selector:
+    app: client-app
+  ports:
+    - name: client-app
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

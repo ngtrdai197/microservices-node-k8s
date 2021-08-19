@@ -16,4 +16,11 @@ spec:
               service:
                 name: auth-clusterip-srv
                 port:
+                  number: 3333
+          - path: /?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: client-app-clusterip-srv
+                port:
                   number: 3000

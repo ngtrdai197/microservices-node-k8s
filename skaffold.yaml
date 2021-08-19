@@ -15,4 +15,12 @@ build:
       sync:
         manual:
           - dest: .
-            src: 'src/**/*.ts'
+            src: "src/**/*.ts"
+    - image: ngtrdai197/microservices_ticketing_client_app
+      context: client-app
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - dest: .
+            src: .
