@@ -41,7 +41,7 @@ export default class ServerSetup {
           useFindAndModify: true,
         }
       );
-      console.log("Connected to MongoDB successfully");
+      console.log("Connected to MongoDB successfully!!!");
     } catch (error) {
       console.log(error);
       throw new DatabaseConnectionError("Error while connecting to database !");
