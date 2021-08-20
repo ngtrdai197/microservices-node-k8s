@@ -5,12 +5,12 @@ on:
     branches:
       - master
     paths:
-      - "auth/*"
+      - "auth/**"
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github@v2
+      - uses: actions/checkout@v2
       - run: cd auth && docker build -t ngtrdai197/microservices_ticketing_auth .
       - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         env:
