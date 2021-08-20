@@ -1,9 +1,8 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import Link from "next/link";
-import Button from "../components/button";
 import styles from "../styles/Home.module.css";
+import LinkWrap from "../components/link-wrap";
 
 const Home: NextPage = () => {
   return (
@@ -54,9 +53,7 @@ const Home: NextPage = () => {
           </a>
         </div>
         <div>
-          <Link href="/about">
-            <Button title={"About me"} onClick={() => {}} />
-          </Link>
+          <LinkWrap to={"/auth/signup"}>Sign up</LinkWrap>
         </div>
       </main>
 
