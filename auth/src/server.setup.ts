@@ -7,8 +7,8 @@ import "express-async-errors";
 import { json } from "body-parser";
 import mongoose from "mongoose";
 import AuthRouter from "./router";
-import { errorHandler } from "./middlewares/error-handler";
-import { DatabaseConnectionError } from "./errors/database.error";
+import { errorHandler } from "@dnt-ticketing-mvc/shared";
+import { DatabaseConnectionError } from "@dnt-ticketing-mvc/shared";
 
 export default class ServerSetup {
   private app!: express.Express;
@@ -41,10 +41,12 @@ export default class ServerSetup {
           useFindAndModify: true,
         }
       );
-      console.log("Connected to MongoDB successfully 🤘🤘🤘");
+      console.log("Auth Service - Connected to MongoDB successfully 🤘🤘🤘");
     } catch (error) {
       console.log(error);
-      throw new DatabaseConnectionError("Error while connecting to database !");
+      throw new DatabaseConnectionError(
+        "Auth Service - Error while connecting to database !"
+      );
     }
   }
 

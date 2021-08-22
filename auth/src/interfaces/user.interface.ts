@@ -5,13 +5,13 @@ export interface IUserDoc extends mongoose.Document {
   password: string;
 }
 
-export interface IFUserAttrs {
+export interface IUserAttrs {
   email: string;
   password: string;
 }
 
 export interface IUserModel extends mongoose.Model<IUserDoc> {
-  build(attrs: IFUserAttrs): IUserDoc;
+  build(attrs: IUserAttrs): IUserDoc;
 }
 
 export interface IUserPayload {
