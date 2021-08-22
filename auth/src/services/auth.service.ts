@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { ConflictRequestError } from "../errors/conflict-request.error";
+import { ConflictRequestError } from "@dnt-ticketing-mvc/shared";
 import { userModel } from "../models/user.model";
 import * as jwt from "jsonwebtoken";
-import { BadRequestError } from "../errors/bad-request.error";
+import { BadRequestError } from "@dnt-ticketing-mvc/shared";
 import { CryptoUtil } from "../utils/crypto.util";
 import { IUserDoc, IUserPayload } from "../interfaces/user.interface";
 

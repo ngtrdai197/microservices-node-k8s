@@ -1,6 +1,6 @@
 import { Response, NextFunction } from "express";
 import * as jwt from "jsonwebtoken";
-import { UnAuthorizationError } from "../errors/unauthorization.error";
+import { UnAuthorizationError } from "@dnt-ticketing-mvc/shared";
 import { IRequest } from "../interfaces/common.interface";
 import { IUserPayload } from "../interfaces/user.interface";
 import { AuthService } from "../services/auth.service";

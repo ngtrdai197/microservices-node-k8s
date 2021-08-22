@@ -6,7 +6,7 @@ import "express-async-errors";
  */
 import { json } from "body-parser";
 import mongoose from "mongoose";
-import AuthRouter from "./router";
+import TicketRouter from "./router";
 import { errorHandler } from "@dnt-ticketing-mvc/shared";
 import { DatabaseConnectionError } from "@dnt-ticketing-mvc/shared";
 
@@ -27,13 +27,13 @@ export default class ServerSetup {
   }
 
   public setupRouting(): void {
-    this.app.use(this.prefix + "/users", AuthRouter.getInstance().router);
+    this.app.use(this.prefix + "/tickets", TicketRouter.getInstance().router);
   }
 
   protected async connectDatabase(): Promise<void> {
     try {
       await mongoose.connect(
-        "mongodb://auth-mongo-clusterip-srv:27017/mcsv-ticketing-auth",
+        "mongodb://tickets-mongo-clusterip-srv:27017/mcsv-ticketing-tickets",
         {
           useNewUrlParser: true,
           useUnifiedTopology: true,
@@ -41,18 +41,18 @@ export default class ServerSetup {
           useFindAndModify: true,
         }
       );
-      console.log("Auth Service - Connected to MongoDB successfully 🤘🤘🤘");
+      console.log("Tickets Service - Connected to MongoDB successfully 🤘🤘🤘");
     } catch (error) {
       console.log(error);
       throw new DatabaseConnectionError(
-        "Auth Service - Error while connecting to database !"
+        "Tickets Service - Error while connecting to database !"
       );
     }
   }
 
   public start(): void {
     this.app.listen(this.PORT, () =>
-      console.log(`Auth Service listening on port: 3000 ! 🚀🚀🚀`)
+      console.log(`Tickets Service listening on port: 3000 ! 🚀🚀🚀`)
     );
   }
 }
