@@ -1,6 +1,6 @@
 import { Response, NextFunction } from "express";
 import * as jwt from "jsonwebtoken";
-import { UnAuthorizationError } from "@dnt-ticketing-mvc/shared";
+import { NotAuthorizationError } from "@dnt-ticketing-mvc/common";
 import { IRequest } from "../interfaces/common.interface";
 import { IUserPayload } from "../interfaces/user.interface";
 import { AuthService } from "../services/auth.service";
@@ -12,7 +12,7 @@ export const authGuardMiddleware = async (
 ) => {
   const authToken = req.headers.authorization;
   if (!authToken) {
-    throw new UnAuthorizationError();
+    throw new NotAuthorizationError();
   }
   try {
     const token = authToken.split(" ")[1];
@@ -22,11 +22,11 @@ export const authGuardMiddleware = async (
     )) as jwt.JwtPayload;
     const user = await AuthService.getInstance().getUserById(decoded.id);
     if (!user) {
-      throw new UnAuthorizationError();
+      throw new NotAuthorizationError();
     }
     req.user = user as IUserPayload;
   } catch (error) {
-    throw new UnAuthorizationError("Verify your token is failed.");
+    throw new NotAuthorizationError("Verify your token is failed.");
   }
   next();
 };

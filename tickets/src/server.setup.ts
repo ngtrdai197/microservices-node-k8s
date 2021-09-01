@@ -9,8 +9,8 @@ import mongoose from "mongoose";
 import * as http from "http";
 
 import TicketRouter from "./router";
-import { errorHandler } from "@dnt-ticketing-mvc/shared";
-import { DatabaseConnectionError } from "@dnt-ticketing-mvc/shared";
+import { errorHandler } from "@dnt-ticketing-mvc/common";
+import { DatabaseConnectionError } from "@dnt-ticketing-mvc/common";
 
 export default class ServerSetup {
   private app!: express.Express;

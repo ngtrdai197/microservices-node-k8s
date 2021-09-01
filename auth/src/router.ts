@@ -2,7 +2,7 @@ import { IRouter, Request, Response, Router } from "express";
 import { body } from "express-validator";
 import { IRequest } from "./interfaces/common.interface";
 import { authGuardMiddleware } from "./middlewares/auth-guard.middleware";
-import { validateRequestHandler } from "@dnt-ticketing-mvc/shared";
+import { validateRequestHandler } from "@dnt-ticketing-mvc/common";
 import { AuthService } from "./services/auth.service";
 
 export default class AuthRouter {

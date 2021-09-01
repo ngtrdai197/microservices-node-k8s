@@ -1,4 +1,4 @@
-import { NotFoundError, parseObjectID } from "@dnt-ticketing-mvc/shared";
+import { NotFoundError, parseObjectID } from "@dnt-ticketing-mvc/common";
 import { Request, Response } from "express";
 import { IRequest } from "../interfaces/common.interface";
 import { ticketModel } from "../models/ticket.model";

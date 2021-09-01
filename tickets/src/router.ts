@@ -1,7 +1,7 @@
 import { IRouter, Request, Response, Router } from "express";
 import { TicketService } from "./services/ticket.service";
 import { body, param } from "express-validator";
-import { validateRequestHandler } from "@dnt-ticketing-mvc/shared";
+import { validateRequestHandler } from "@dnt-ticketing-mvc/common";
 
 export default class TicketRouter {
   public readonly router: IRouter = Router();
