@@ -6,12 +6,15 @@ import "express-async-errors";
  */
 import { json } from "body-parser";
 import mongoose from "mongoose";
+import * as http from "http";
+
 import AuthRouter from "./router";
-import { errorHandler } from "@dnt-ticketing-mvc/shared";
-import { DatabaseConnectionError } from "@dnt-ticketing-mvc/shared";
+import { errorHandler } from "@dnt-ticketing-mvc/common";
+import { DatabaseConnectionError } from "@dnt-ticketing-mvc/common";
 
 export default class ServerSetup {
   private app!: express.Express;
+  private server!: http.Server;
   private readonly prefix: string = "/api";
 
   constructor(public readonly PORT: number) {
@@ -51,8 +54,22 @@ export default class ServerSetup {
   }
 
   public start(): void {
-    this.app.listen(this.PORT, () =>
+    this.server = this.app.listen(this.PORT, () =>
       console.log(`Auth Service listening on port: 3000 ! 🚀🚀🚀`)
     );
+    process.on("SIGTERM", this._handleGracefulShutdown);
+    process.on("SIGTTIN", this._handleGracefulShutdown);
   }
+
+  private _handleGracefulShutdown = (): void => {
+    this.server.close(() => {
+      console.log("Graceful shutting down - Auth services 🎉");
+      mongoose.connections.forEach((connection) =>
+        connection.close(false, () => {
+          console.log("MongoDB connection closed - Auth services ");
+          process.exit(0);
+        })
+      );
+    });
+  };
 }
