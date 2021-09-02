@@ -1,6 +1,6 @@
 import { connect } from "node-nats-streaming";
 import { randomBytes } from "crypto";
-import { TicketCreatedListener } from "./events/ticket/ticket-created-listener";
+import { TicketCreatedListener } from "@dnt-ticketing-mvc/common";
 
 console.clear();
 
