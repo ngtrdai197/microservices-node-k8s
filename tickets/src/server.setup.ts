@@ -5,13 +5,16 @@ import "express-async-errors";
  * Or we can wrap throw Error inside next: express.NextFunction instead using libs
  */
 import { json } from "body-parser";
+import { randomBytes } from "crypto";
 import mongoose from "mongoose";
-import cookieSession from 'cookie-session';
+import cookieSession from "cookie-session";
 import * as http from "http";
 
 import TicketRouter from "./router";
 import { errorHandler } from "@dnt-ticketing-mvc/common";
 import { DatabaseConnectionError } from "@dnt-ticketing-mvc/common";
+import { natsInstance } from "./nats-wrapper";
+import { ENV } from "./env";
 
 export default class ServerSetup {
   private app!: express.Express;
@@ -22,35 +25,41 @@ export default class ServerSetup {
     this.init();
   }
 
+  public start(): void {
+    this.server = this.app.listen(this.PORT, () =>
+      console.log(`Tickets Service listening on port: 3000 ! 🚀🚀🚀`)
+    );
+    process.on("SIGTERM", this._handleGracefulShutdown);
+    process.on("SIGTTIN", this._handleGracefulShutdown);
+  }
+
   private init(): void {
     this.app = express();
     this.app.use(json());
     this.app.use(
       cookieSession({
         signed: false,
-        secure: process.env.NODE_ENV !== 'test',
+        secure: process.env.NODE_ENV !== "test",
       })
     );
-    this.connectDatabase();
-    this.setupRouting();
+    this._connectDatabase();
+    this._connectNats();
+    this._setupRouting();
     this.app.use(errorHandler);
   }
 
-  public setupRouting(): void {
+  public _setupRouting(): void {
     this.app.use(this.prefix + "/tickets", TicketRouter.getInstance().router);
   }
 
-  protected async connectDatabase(): Promise<void> {
+  private async _connectDatabase(): Promise<void> {
     try {
-      await mongoose.connect(
-        "mongodb://tickets-mongo-clusterip-srv:27017/mcsv-ticketing-tickets",
-        {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-          useCreateIndex: true,
-          useFindAndModify: true,
-        }
-      );
+      await mongoose.connect(ENV.MONGODB_URL!, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+        useFindAndModify: true,
+      });
       console.log("Tickets Service - Connected to MongoDB successfully 🤘🤘🤘");
     } catch (error) {
       console.log(error);
@@ -60,12 +69,22 @@ export default class ServerSetup {
     }
   }
 
-  public start(): void {
-    this.server = this.app.listen(this.PORT, () =>
-      console.log(`Tickets Service listening on port: 3000 ! 🚀🚀🚀`)
-    );
-    process.on("SIGTERM", this._handleGracefulShutdown);
-    process.on("SIGTTIN", this._handleGracefulShutdown);
+  private async _connectNats() {
+    try {
+      await natsInstance.connect({
+        clusterId: ENV.NATS_CLUSTER_ID!,
+        clientId: ENV.NAST_CLIENT_ID!,
+        url: ENV.NATS_URL!,
+      });
+      natsInstance.client.on("close", () => {
+        console.log("NATS connection closed!");
+        process.exit();
+      });
+      process.on("SIGINT", () => natsInstance.client.close());
+      process.on("SIGTERM", () => natsInstance.client.close());
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   private _handleGracefulShutdown = (): void => {
