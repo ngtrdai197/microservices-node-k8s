@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@dnt-ticketing-mvc/common": "^1.0.5",
+    "@dnt-ticketing-mvc/common": "^1.0.7",
     "node-nats-streaming": "^0.3.2"
   },
   "devDependencies": {

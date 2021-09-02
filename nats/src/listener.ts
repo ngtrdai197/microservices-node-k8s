@@ -1,6 +1,9 @@
 import { connect } from "node-nats-streaming";
 import { randomBytes } from "crypto";
-import { TicketCreatedListener } from "@dnt-ticketing-mvc/common";
+import {
+  TicketCreatedListener,
+  TicketUpdatedListener,
+} from "@dnt-ticketing-mvc/common";
 
 console.clear();
 
@@ -15,6 +18,7 @@ stan.on("connect", () => {
     process.exit();
   });
   new TicketCreatedListener(stan).listen();
+  new TicketUpdatedListener(stan).listen();
 });
 
 process.on("SIGINT", () => stan.close());
