@@ -17,9 +17,8 @@ export class TicketService {
   public async createTicket(req: IRequest, resp: Response) {
     const ticket = await ticketModel
       .build({
-        userId: req.user!.id,
-        title: "Summer Party",
-        price: 50,
+        ...req.body,
+        userId: req.currentUser!.id,
       })
       .save();
     return resp.status(201).jsonp({ statusCode: 201, data: ticket });
@@ -35,6 +34,21 @@ export class TicketService {
     return resp.status(200).jsonp({
       statusCode: 200,
       data: ticket,
+    });
+  }
+
+  public async deleteTicket(req: Request, resp: Response) {
+    const ticketId = req.params.ticketId;
+
+    const ticket = await ticketModel.findById(ticketId).exec();
+    if (!ticket) {
+      throw new NotFoundError(`Cannot found ticket with ID: ${ticketId}`);
+    }
+    await ticket.deleteOne();
+    return resp.status(200).jsonp({
+      statusCode: 200,
+      data: null,
+      mesg: "Deleted ticket successfully",
     });
   }
 
