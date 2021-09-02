@@ -1,9 +1,16 @@
-import { NotFoundError, parseObjectID } from "@dnt-ticketing-mvc/common";
+import {
+  NotAuthorizedError,
+  NotFoundError,
+  parseObjectID,
+  TicketCreatedPublisher,
+  TicketUpdatedPublisher,
+} from "@dnt-ticketing-mvc/common";
 import { Request, Response } from "express";
 import { IRequest } from "../interfaces/common.interface";
 import { ticketModel } from "../models/ticket.model";
+import { natsInstance } from "../nats-wrapper";
 
-export class TicketService {
+class TicketService {
   private static instance: TicketService;
   constructor() {}
 
@@ -21,16 +28,35 @@ export class TicketService {
         userId: req.currentUser!.id,
       })
       .save();
+    await new TicketCreatedPublisher(natsInstance.client).publish({
+      id: ticket.id,
+      title: ticket.title,
+      price: ticket.price,
+    });
     return resp.status(201).jsonp({ statusCode: 201, data: ticket });
   }
 
   public async editTicket(req: Request, resp: Response) {
-    const ticketId = parseObjectID(req.params.ticketId);
-
-    const ticket = await ticketModel.findByIdAndUpdate(ticketId, req.body);
+    const ticket = await ticketModel.findById(req.params.ticketId);
     if (!ticket) {
-      throw new NotFoundError(`Cannot found ticket with ID: ${ticketId}`);
+      throw new NotFoundError(
+        `Cannot found ticket with ID: ${req.params.ticketId}`
+      );
     }
+    if (ticket.userId !== req.currentUser?.id) {
+      throw new NotAuthorizedError("You do not have permission to do this");
+    }
+    await ticket
+      .set({
+        title: req.body.title,
+        price: req.body.price,
+      })
+      .save();
+    await new TicketUpdatedPublisher(natsInstance.client).publish({
+      id: ticket.id,
+      title: ticket.title,
+      price: ticket.price,
+    });
     return resp.status(200).jsonp({
       statusCode: 200,
       data: ticket,
@@ -66,3 +92,6 @@ export class TicketService {
     return resp.status(200).jsonp({ statusCode: 200, data: ticket });
   }
 }
+
+const ticketService = TicketService.getInstance();
+export default ticketService;

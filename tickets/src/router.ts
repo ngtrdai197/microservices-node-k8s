@@ -1,5 +1,5 @@
 import { IRouter, Request, Response, Router } from "express";
-import { TicketService } from "./services/ticket.service";
+import ticketService from "./services/ticket.service";
 import { body, param } from "express-validator";
 import {
   validateRequestHandler,
@@ -35,7 +35,7 @@ export default class TicketRouter {
       ],
       [validateRequestHandler],
       (request: Request, response: Response) =>
-        TicketService.getInstance().createTicket(request, response)
+        ticketService.createTicket(request, response)
     );
     this.router.put(
       "/:ticketId",
@@ -54,7 +54,7 @@ export default class TicketRouter {
       ],
       [validateRequestHandler],
       (request: Request, response: Response) =>
-        TicketService.getInstance().editTicket(request, response)
+        ticketService.editTicket(request, response)
     );
     this.router.delete(
       "/:ticketId",
@@ -66,13 +66,13 @@ export default class TicketRouter {
       ],
       [validateRequestHandler],
       (request: Request, response: Response) =>
-        TicketService.getInstance().deleteTicket(request, response)
+        ticketService.deleteTicket(request, response)
     );
     this.router.get(
       "/",
       [authGuardMiddleware],
       (request: Request, response: Response) =>
-        TicketService.getInstance().getTickets(request, response)
+        ticketService.getTickets(request, response)
     );
     this.router.get(
       "/:ticketId",
@@ -83,7 +83,7 @@ export default class TicketRouter {
           .withMessage("Params of ticket ID is invalid"),
       ],
       (request: Request, response: Response) =>
-        TicketService.getInstance().getTicketById(request, response)
+        ticketService.getTicketById(request, response)
     );
   }
 }
