@@ -1,7 +1,10 @@
 import { IRouter, Request, Response, Router } from "express";
 import { TicketService } from "./services/ticket.service";
 import { body, param } from "express-validator";
-import { validateRequestHandler } from "@dnt-ticketing-mvc/common";
+import {
+  validateRequestHandler,
+  authGuardMiddleware,
+} from "@dnt-ticketing-mvc/common";
 
 export default class TicketRouter {
   public readonly router: IRouter = Router();
@@ -20,6 +23,7 @@ export default class TicketRouter {
   private initRouter(): void {
     this.router.post(
       "/",
+      [authGuardMiddleware],
       [
         body("title")
           .isString()
@@ -35,6 +39,7 @@ export default class TicketRouter {
     );
     this.router.put(
       "/:ticketId",
+      [authGuardMiddleware],
       [
         param("ticketId")
           .isMongoId()
@@ -51,11 +56,27 @@ export default class TicketRouter {
       (request: Request, response: Response) =>
         TicketService.getInstance().editTicket(request, response)
     );
-    this.router.get("/", (request: Request, response: Response) =>
-      TicketService.getInstance().getTickets(request, response)
+    this.router.delete(
+      "/:ticketId",
+      [authGuardMiddleware],
+      [
+        param("ticketId")
+          .isMongoId()
+          .withMessage("Params of ticket ID is invalid"),
+      ],
+      [validateRequestHandler],
+      (request: Request, response: Response) =>
+        TicketService.getInstance().deleteTicket(request, response)
+    );
+    this.router.get(
+      "/",
+      [authGuardMiddleware],
+      (request: Request, response: Response) =>
+        TicketService.getInstance().getTickets(request, response)
     );
     this.router.get(
       "/:ticketId",
+      [authGuardMiddleware],
       [
         param("ticketId")
           .isMongoId()

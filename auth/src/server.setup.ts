@@ -6,6 +6,7 @@ import "express-async-errors";
  */
 import { json } from "body-parser";
 import mongoose from "mongoose";
+import cookieSession from 'cookie-session';
 import * as http from "http";
 
 import AuthRouter from "./router";
@@ -24,6 +25,12 @@ export default class ServerSetup {
   private init(): void {
     this.app = express();
     this.app.use(json());
+    this.app.use(
+      cookieSession({
+        signed: false,
+        secure: process.env.NODE_ENV !== 'test',
+      })
+    );
     this.connectDatabase();
     this.setupRouting();
     this.app.use(errorHandler);
