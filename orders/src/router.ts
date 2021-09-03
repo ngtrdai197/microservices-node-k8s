@@ -1,0 +1,89 @@
+import { IRouter, Request, Response, Router } from "express";
+import orderService from "./services/order.service";
+import { body, param } from "express-validator";
+import {
+  validateRequestHandler,
+  authGuardMiddleware,
+} from "@dnt-ticketing-mvc/common";
+
+export default class OrderRouter {
+  public readonly router: IRouter = Router();
+  private static instance: OrderRouter;
+  constructor() {
+    this.initRouter();
+  }
+
+  public static getInstance(): OrderRouter {
+    if (!OrderRouter.instance) {
+      OrderRouter.instance = new OrderRouter();
+    }
+    return OrderRouter.instance;
+  }
+
+  private initRouter(): void {
+    this.router.post(
+      "/",
+      [authGuardMiddleware],
+      [
+        body("title")
+          .isString()
+          .notEmpty()
+          .withMessage("You must supply a title")
+          .isLength({ min: 6 })
+          .withMessage("Length of title is invalid"),
+        body("price").isFloat().withMessage("Price must be a number"),
+      ],
+      [validateRequestHandler],
+      (request: Request, response: Response) =>
+        orderService.createOrder(request, response)
+    );
+    this.router.put(
+      "/:ticketId",
+      [authGuardMiddleware],
+      [
+        param("ticketId")
+          .isMongoId()
+          .withMessage("Params of ticket ID is invalid"),
+        body("title")
+          .isString()
+          .notEmpty()
+          .withMessage("You must supply a title")
+          .isLength({ min: 6 })
+          .withMessage("Length of title is invalid"),
+        body("price").isFloat().withMessage("Price must be a number"),
+      ],
+      [validateRequestHandler],
+      (request: Request, response: Response) =>
+        orderService.editOrder(request, response)
+    );
+    this.router.delete(
+      "/:orderId",
+      [authGuardMiddleware],
+      [
+        param("orderId")
+          .isMongoId()
+          .withMessage("Params of ticket ID is invalid"),
+      ],
+      [validateRequestHandler],
+      (request: Request, response: Response) =>
+        orderService.deleteOrder(request, response)
+    );
+    this.router.get(
+      "/",
+      [authGuardMiddleware],
+      (request: Request, response: Response) =>
+        orderService.getOrders(request, response)
+    );
+    this.router.get(
+      "/:orderId",
+      [authGuardMiddleware],
+      [
+        param("orderId")
+          .isMongoId()
+          .withMessage("Params of order ID is invalid"),
+      ],
+      (request: Request, response: Response) =>
+        orderService.getOrderById(request, response)
+    );
+  }
+}
