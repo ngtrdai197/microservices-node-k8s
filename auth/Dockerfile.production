@@ -1,0 +1,28 @@
+FROM node:alpine AS base
+
+WORKDIR /app
+
+# ---------- Builder ----------
+# Creates:
+# - node_modules: production dependencies (no dev dependencies)
+# - build: A production build compiled by tsc
+
+FROM base AS builder
+
+COPY ["package.json", "package-lock.json*", "./"]
+
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+RUN npm prune --production # Remove dev dependencies
+
+# ---------- Release ----------
+FROM builder AS release
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/build ./build
+
+CMD ["npm", "run", "start:prod"]
