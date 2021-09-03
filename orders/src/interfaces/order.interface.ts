@@ -1,14 +1,9 @@
 import mongoose from "mongoose";
-
-export enum ORDER_STATUS {
-  EXPIRED,
-  PAID,
-  PENDING,
-}
+import { ORDER_STATUS } from "@dnt-ticketing-mvc/common";
 
 export interface IOrder {
   status: ORDER_STATUS;
-  expiredAt: string | Date;
+  expiresAt: string | Date;
   userId: string;
   ticketId: string;
 }

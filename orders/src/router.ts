@@ -25,13 +25,10 @@ export default class OrderRouter {
       "/",
       [authGuardMiddleware],
       [
-        body("title")
+        body("ticketId")
           .isString()
           .notEmpty()
-          .withMessage("You must supply a title")
-          .isLength({ min: 6 })
-          .withMessage("Length of title is invalid"),
-        body("price").isFloat().withMessage("Price must be a number"),
+          .withMessage("Ticket Id must be supplied"),
       ],
       [validateRequestHandler],
       (request: Request, response: Response) =>
@@ -44,13 +41,10 @@ export default class OrderRouter {
         param("ticketId")
           .isMongoId()
           .withMessage("Params of ticket ID is invalid"),
-        body("title")
+        body("status")
           .isString()
           .notEmpty()
-          .withMessage("You must supply a title")
-          .isLength({ min: 6 })
-          .withMessage("Length of title is invalid"),
-        body("price").isFloat().withMessage("Price must be a number"),
+          .withMessage("You must supply a status"),
       ],
       [validateRequestHandler],
       (request: Request, response: Response) =>

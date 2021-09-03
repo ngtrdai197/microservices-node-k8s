@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import { IOrderDoc, IOrderModel, ORDER_STATUS } from "../interfaces/order.interface";
+import { IOrderDoc, IOrderModel } from "../interfaces/order.interface";
+import { ORDER_STATUS } from "@dnt-ticketing-mvc/common";
 
 const orderSchema = new mongoose.Schema(
   {
@@ -10,15 +11,16 @@ const orderSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ORDER_STATUS,
-      default: ORDER_STATUS.PENDING,
+      default: ORDER_STATUS.CREATED,
       required: true,
     },
-    expiredAt: {
-      type: Date,
+    expiresAt: {
+      type: mongoose.Schema.Types.Date,
       require: true,
     },
     ticketId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Ticket",
       require: true,
     },
   },
@@ -35,6 +37,6 @@ const orderSchema = new mongoose.Schema(
 orderSchema.statics.build = (attrs: IOrderDoc) => new orderModel(attrs);
 
 export const orderModel = mongoose.model<IOrderDoc, IOrderModel>(
-  "Ticket",
+  "Order",
   orderSchema
 );
