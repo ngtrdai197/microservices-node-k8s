@@ -18,7 +18,10 @@ export class TicketUpdatedListener extends Listener<
 
   public async onMessage(data: ITicketUpdated, msg: Message) {
     console.log(`${TicketUpdatedListener.name} =>`, data);
-    const ticket = await ticketModel.findById(data.id);
+    const ticket = await ticketModel.findOne({
+      _id: data.id,
+      version: data.version,
+    });
     if (!ticket) {
       throw new NotFoundError("Ticket not exists");
     }
