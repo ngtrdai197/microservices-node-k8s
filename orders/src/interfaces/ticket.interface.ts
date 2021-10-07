@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 export interface ITicket {
   title: string;
   price: number;
+  version: number;
 }
 export interface ITicketDoc extends mongoose.Document, ITicket {
   isReserved(): Promise<boolean>;
