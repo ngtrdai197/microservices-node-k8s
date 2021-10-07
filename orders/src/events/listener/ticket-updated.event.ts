@@ -3,17 +3,18 @@ import {
   ITicketUpdated,
   Subjects,
   NotFoundError,
+  QUEUE_GROUP_NAME,
+  Listener
 } from "@dnt-ticketing-mvc/common";
-import { Listener } from "@dnt-ticketing-mvc/common/build/events/base/base.listener";
 import { Message } from "node-nats-streaming";
-import { ticketModel } from "../models/ticket.model";
+import { ticketModel } from "../../models/ticket.model";
 
 export class TicketUpdatedListener extends Listener<
   TicketUpdatedEvent,
   ITicketUpdated
 > {
   public readonly subject = Subjects.TicketUpdated;
-  public readonly queueGroupName = "ORDERS_SERICE"; //QUEUE_GROUP_NAME.GROUP_ORDERS;
+  public readonly queueGroupName = QUEUE_GROUP_NAME.GROUP_ORDERS;
 
   public async onMessage(data: ITicketUpdated, msg: Message) {
     console.log(`${TicketUpdatedListener} =>`, data);

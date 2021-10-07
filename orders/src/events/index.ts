@@ -1,2 +1,2 @@
-export * from "./ticket-created.event";
-export * from "./ticket-updated.event";
+export * from "./listener/ticket-created.event";
+export * from "./listener/ticket-updated.event";
