@@ -79,5 +79,16 @@ export default class OrderRouter {
       (request: Request, response: Response) =>
         orderService.getOrderById(request, response)
     );
+    this.router.get(
+      "/ticket/:ticketId",
+      [authGuardMiddleware],
+      [
+        param("ticketId")
+          .isMongoId()
+          .withMessage("Params of ticket ID is invalid"),
+      ],
+      (request: Request, response: Response) =>
+        orderService.getTicketById(request, response)
+    );
   }
 }

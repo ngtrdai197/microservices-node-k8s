@@ -4,7 +4,7 @@ import {
   Subjects,
   NotFoundError,
   QUEUE_GROUP_NAME,
-  Listener
+  Listener,
 } from "@dnt-ticketing-mvc/common";
 import { Message } from "node-nats-streaming";
 import { ticketModel } from "../../models/ticket.model";
@@ -17,7 +17,7 @@ export class TicketUpdatedListener extends Listener<
   public readonly queueGroupName = QUEUE_GROUP_NAME.GROUP_ORDERS;
 
   public async onMessage(data: ITicketUpdated, msg: Message) {
-    console.log(`${TicketUpdatedListener} =>`, data);
+    console.log(`${TicketUpdatedListener.name} =>`, data);
     const ticket = await ticketModel.findById(data.id);
     if (!ticket) {
       throw new NotFoundError("Ticket not exists");

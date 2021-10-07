@@ -2,7 +2,6 @@ import {
   NotAuthorizedError,
   NotFoundError,
   ConflictRequestError,
-  parseObjectID,
   ORDER_STATUS,
 } from "@dnt-ticketing-mvc/common";
 import { Request, Response } from "express";
@@ -92,12 +91,22 @@ class OrderService {
   }
 
   public async getOrderById(req: Request, resp: Response) {
-    const orderId = parseObjectID(req.params.orderId);
+    const orderId = req.params.orderId;
     const order = await orderModel.findById(orderId);
     if (!order) {
       throw new NotFoundError(`Cannot found order with ID: ${orderId}`);
     }
     return resp.status(200).jsonp({ statusCode: 200, data: order });
+  }
+
+  public async getTicketById(req: Request, resp: Response) {
+    const ticket = await ticketModel.findById(req.params.ticketId);
+    if (!ticket) {
+      throw new NotFoundError(
+        `Cannot found ticket with ID: ${req.params.ticketId}`
+      );
+    }
+    return resp.status(200).jsonp({ statusCode: 200, data: ticket });
   }
 }
 
