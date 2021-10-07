@@ -3,10 +3,11 @@ import mongoose from "mongoose";
 export interface ITicket {
   title: string;
   price: number;
-  userId: string;
   version: number;
 }
-export interface ITicketDoc extends mongoose.Document, ITicket {}
+export interface ITicketDoc extends mongoose.Document, ITicket {
+  isReserved(): Promise<boolean>;
+}
 
 export interface ITicketAttrs extends ITicket {}
 

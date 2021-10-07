@@ -2,10 +2,10 @@ import {
   NotAuthorizedError,
   NotFoundError,
   parseObjectID,
-  TicketCreatedPublisher,
-  TicketUpdatedPublisher,
 } from "@dnt-ticketing-mvc/common";
 import { Request, Response } from "express";
+import { TicketCreatedPublisher } from "../events/publisher/ticket-created.event";
+import { TicketUpdatedPublisher } from "../events/publisher/ticket-updated.event";
 import { IRequest } from "../interfaces/common.interface";
 import { ticketModel } from "../models/ticket.model";
 import { natsInstance } from "../nats-wrapper";
@@ -32,6 +32,7 @@ class TicketService {
       id: ticket.id,
       title: ticket.title,
       price: ticket.price,
+      version: ticket.version,
     });
     return resp.status(201).jsonp({ statusCode: 201, data: ticket });
   }
@@ -56,6 +57,7 @@ class TicketService {
       id: ticket.id,
       title: ticket.title,
       price: ticket.price,
+      version: ticket.version,
     });
     return resp.status(200).jsonp({
       statusCode: 200,
