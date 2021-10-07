@@ -14,6 +14,7 @@ import { errorHandler } from "@dnt-ticketing-mvc/common";
 import { DatabaseConnectionError } from "@dnt-ticketing-mvc/common";
 import { natsInstance } from "./nats-wrapper";
 import { ENV } from "./env";
+import { TicketUpdatedListener, TicketCreatedListener } from "./events";
 
 export default class ServerSetup {
   private app!: express.Express;
@@ -81,6 +82,9 @@ export default class ServerSetup {
       });
       process.on("SIGINT", () => natsInstance.client.close());
       process.on("SIGTERM", () => natsInstance.client.close());
+
+      new TicketCreatedListener(natsInstance.client).listen();
+      new TicketUpdatedListener(natsInstance.client).listen();
     } catch (error) {
       console.error(error);
     }

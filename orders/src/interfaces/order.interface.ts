@@ -1,11 +1,13 @@
 import mongoose from "mongoose";
 import { ORDER_STATUS } from "@dnt-ticketing-mvc/common";
+import { ITicketDoc } from "./ticket.interface";
 
 export interface IOrder {
   status: ORDER_STATUS;
   expiresAt: string | Date;
   userId: string;
   ticketId: string;
+  ticket: ITicketDoc;
 }
 
 export interface IOrderDoc extends mongoose.Document, IOrder {}

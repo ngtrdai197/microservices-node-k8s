@@ -1,14 +1,18 @@
 import {
   NotAuthorizedError,
   NotFoundError,
+  ConflictRequestError,
   parseObjectID,
+  ORDER_STATUS,
 } from "@dnt-ticketing-mvc/common";
 import { Request, Response } from "express";
 import { IRequest } from "../interfaces/common.interface";
 import { orderModel } from "../models/order.model";
+import { ticketModel } from "../models/ticket.model";
 
 class OrderService {
   private static instance: OrderService;
+  private readonly EXPIRATION_ORDER_BY_SECONDS = 15 * 60;
   constructor() {}
 
   public static getInstance(): OrderService {
@@ -19,10 +23,28 @@ class OrderService {
   }
 
   public async createOrder(req: IRequest, resp: Response) {
+    const { ticketId } = req.body;
+    const ticket = await ticketModel.findById(ticketId);
+    if (!ticket) {
+      throw new NotFoundError(
+        `Can not found ticket with ticket id: ${ticketId}`
+      );
+    }
+    const exist = await ticket.isReserved();
+    if (exist) {
+      throw new ConflictRequestError("Ticket is already reserved");
+    }
+    // Calculate an expiration date for this order
+    const expiration = new Date();
+    expiration.setSeconds(
+      expiration.getSeconds() + this.EXPIRATION_ORDER_BY_SECONDS
+    );
     const order = await orderModel
       .build({
         ...req.body,
         userId: req.currentUser!.id,
+        expiresAt: expiration,
+        status: ORDER_STATUS.CREATED,
       })
       .save();
     return resp.status(201).jsonp({ statusCode: 201, data: order });
