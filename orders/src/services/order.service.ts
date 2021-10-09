@@ -40,7 +40,7 @@ class OrderService {
     );
     const order = await orderModel
       .build({
-        ...req.body,
+        ticket: ticketId,
         userId: req.currentUser!.id,
         expiresAt: expiration,
         status: ORDER_STATUS.CREATED,
@@ -92,10 +92,11 @@ class OrderService {
 
   public async getOrderById(req: Request, resp: Response) {
     const orderId = req.params.orderId;
-    const order = await orderModel.findById(orderId);
+    const order = await orderModel.findById(orderId).populate(["ticket"]);
     if (!order) {
       throw new NotFoundError(`Cannot found order with ID: ${orderId}`);
     }
+    console.log("order.ticket :>> ", order.ticket);
     return resp.status(200).jsonp({ statusCode: 200, data: order });
   }
 

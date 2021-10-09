@@ -13,4 +13,8 @@ export interface ITicketAttrs extends ITicket {}
 
 export interface ITicketModel extends mongoose.Model<ITicketDoc> {
   build(attrs: ITicketAttrs): ITicketDoc;
+  findByEvent(event: {
+    id: string;
+    version: number;
+  }): Promise<ITicketDoc | null>;
 }

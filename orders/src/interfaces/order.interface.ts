@@ -6,13 +6,15 @@ export interface IOrder {
   status: ORDER_STATUS;
   expiresAt: string | Date;
   userId: string;
-  ticketId: string;
-  ticket: ITicketDoc;
+  ticket: string | ITicketDoc;
+  version: number;
 }
 
 export interface IOrderDoc extends mongoose.Document, IOrder {}
 
-export interface IOrderAttrs extends IOrder {}
+type OrderBuildType = Omit<IOrder, "version">;
+
+export interface IOrderAttrs extends OrderBuildType {}
 
 export interface IOrderModel extends mongoose.Model<IOrderDoc> {
   build(attrs: IOrderAttrs): IOrderDoc;

@@ -5,14 +5,12 @@ import "express-async-errors";
  * Or we can wrap throw Error inside next: express.NextFunction instead using libs
  */
 import { json } from "body-parser";
-import { randomBytes } from "crypto";
 import mongoose from "mongoose";
 import cookieSession from "cookie-session";
 import * as http from "http";
 
 import TicketRouter from "./router";
-import { errorHandler } from "@dnt-ticketing-mvc/common";
-import { DatabaseConnectionError } from "@dnt-ticketing-mvc/common";
+import { DatabaseConnectionError, errorHandler } from "@dnt-ticketing-mvc/common";
 import { natsInstance } from "./nats-wrapper";
 import { ENV } from "./env";
 
@@ -27,7 +25,7 @@ export default class ServerSetup {
 
   public start(): void {
     this.server = this.app.listen(this.PORT, () =>
-      console.log(`Tickets Service listening on port: 3000 ! 🚀🚀🚀`)
+      console.log(`Tickets Service listening on port: ${this.PORT} ! 🚀🚀🚀`)
     );
     process.on("SIGTERM", this._handleGracefulShutdown);
     process.on("SIGTTIN", this._handleGracefulShutdown);

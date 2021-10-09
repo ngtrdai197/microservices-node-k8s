@@ -10,8 +10,7 @@ import cookieSession from "cookie-session";
 import * as http from "http";
 
 import orderRouter from "./router";
-import { errorHandler } from "@dnt-ticketing-mvc/common";
-import { DatabaseConnectionError } from "@dnt-ticketing-mvc/common";
+import { DatabaseConnectionError, errorHandler } from "@dnt-ticketing-mvc/common";
 import { natsInstance } from "./nats-wrapper";
 import { ENV } from "./env";
 import { TicketUpdatedListener, TicketCreatedListener } from "./events";
