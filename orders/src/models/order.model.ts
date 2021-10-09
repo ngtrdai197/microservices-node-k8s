@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
-import { IOrderDoc, IOrderModel } from "../interfaces/order.interface";
 import { ORDER_STATUS } from "@dnt-ticketing-mvc/common";
+import { IOrderDoc, IOrderModel } from "../interfaces/order.interface";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 const orderSchema = new mongoose.Schema(
   {
@@ -18,7 +19,7 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Date,
       require: true,
     },
-    ticketId: {
+    ticket: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Ticket",
       require: true,
@@ -34,6 +35,9 @@ const orderSchema = new mongoose.Schema(
     },
   }
 );
+
+orderSchema.set("versionKey", "version");
+orderSchema.plugin(updateIfCurrentPlugin);
 orderSchema.statics.build = (attrs: IOrderDoc) => new orderModel(attrs);
 
 export const orderModel = mongoose.model<IOrderDoc, IOrderModel>(

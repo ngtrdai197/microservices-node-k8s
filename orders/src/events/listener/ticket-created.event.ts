@@ -16,8 +16,6 @@ export class TicketCreatedListener extends Listener<
   public readonly queueGroupName = QUEUE_GROUP_NAME.GROUP_ORDERS;
 
   public async onMessage(data: ITicketCreated, msg: Message) {
-    console.log(`${TicketCreatedListener.name} =>`, data);
-
     const ticket = ticketModel.build(data);
     await ticket.save();
     msg.ack();

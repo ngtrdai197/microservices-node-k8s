@@ -1,9 +1,9 @@
+import { Request, Response } from "express";
 import {
   NotAuthorizedError,
   NotFoundError,
   parseObjectID,
 } from "@dnt-ticketing-mvc/common";
-import { Request, Response } from "express";
 import { TicketCreatedPublisher } from "../events/publisher/ticket-created.event";
 import { TicketUpdatedPublisher } from "../events/publisher/ticket-updated.event";
 import { IRequest } from "../interfaces/common.interface";
