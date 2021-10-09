@@ -6,7 +6,7 @@ export interface ITicket {
   version: number;
 }
 export interface ITicketDoc extends mongoose.Document, ITicket {
-  isReserved(): Promise<boolean>;
+  isReserved(userId: string): Promise<boolean>;
 }
 
 export interface ITicketAttrs extends ITicket {}

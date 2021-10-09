@@ -9,14 +9,7 @@
       "node"
     ],
     "baseUrl": "./src",
-    "paths": {
-      "@dnt-ticketing-mvc/common": [
-        "shared"
-      ],
-      "@internal/event": [
-        "events"
-      ],
-    },
+    "paths": {},
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true

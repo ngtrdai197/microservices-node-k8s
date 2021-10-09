@@ -41,9 +41,10 @@ ticketSchema.statics.build = (attrs: ITicketDoc) =>
     _id: attrs.id, // override ticket id in orders service by ticket id in ticket service
     ...attrs,
   });
-ticketSchema.methods.isReserved = async function () {
+ticketSchema.methods.isReserved = async function (userId: string) {
+  const ticket = this;
   const existingOrder = await orderModel.findOne({
-    ticketId: this,
+    ticket: ticket._id,
     status: {
       $in: [
         ORDER_STATUS.AWAITING_PAYMENT,
@@ -51,6 +52,7 @@ ticketSchema.methods.isReserved = async function () {
         ORDER_STATUS.COMPLETE,
       ],
     },
+    userId,
   });
   return !!existingOrder;
 };

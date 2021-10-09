@@ -10,9 +10,13 @@ import cookieSession from "cookie-session";
 import * as http from "http";
 
 import TicketRouter from "./router";
-import { DatabaseConnectionError, errorHandler } from "@dnt-ticketing-mvc/common";
+import {
+  DatabaseConnectionError,
+  errorHandler,
+} from "@dnt-ticketing-mvc/common";
 import { natsInstance } from "./nats-wrapper";
 import { ENV } from "./env";
+import { OrderCreatedListener } from "./events/listener/order-created.event";
 
 export default class ServerSetup {
   private app!: express.Express;
@@ -80,6 +84,7 @@ export default class ServerSetup {
       });
       process.on("SIGINT", () => natsInstance.client.close());
       process.on("SIGTERM", () => natsInstance.client.close());
+      new OrderCreatedListener(natsInstance.client).listen();
     } catch (error) {
       console.error(error);
     }

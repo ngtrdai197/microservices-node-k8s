@@ -4,7 +4,9 @@ import {
   ConflictRequestError,
   ORDER_STATUS,
 } from "@dnt-ticketing-mvc/common";
+import { OrderCreatedPublisher } from "../events/publisher/order-created.event";
 import { Request, Response } from "express";
+import { natsInstance } from "../nats-wrapper";
 import { IRequest } from "../interfaces/common.interface";
 import { orderModel } from "../models/order.model";
 import { ticketModel } from "../models/ticket.model";
@@ -29,7 +31,7 @@ class OrderService {
         `Can not found ticket with ticket id: ${ticketId}`
       );
     }
-    const exist = await ticket.isReserved();
+    const exist = await ticket.isReserved(req.currentUser!.id);
     if (exist) {
       throw new ConflictRequestError("Ticket is already reserved");
     }
@@ -46,6 +48,17 @@ class OrderService {
         status: ORDER_STATUS.CREATED,
       })
       .save();
+    await new OrderCreatedPublisher(natsInstance.client).publish({
+      id: order.id,
+      status: order.status,
+      expiresAt: order.expiresAt,
+      userId: order.userId,
+      version: order.version,
+      ticket: {
+        id: ticket.id,
+        price: ticket.price,
+      },
+    });
     return resp.status(201).jsonp({ statusCode: 201, data: order });
   }
 
@@ -96,7 +109,6 @@ class OrderService {
     if (!order) {
       throw new NotFoundError(`Cannot found order with ID: ${orderId}`);
     }
-    console.log("order.ticket :>> ", order.ticket);
     return resp.status(200).jsonp({ statusCode: 200, data: order });
   }
 
