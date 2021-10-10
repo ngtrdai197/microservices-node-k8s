@@ -1,7 +1,10 @@
 import { IRouter, Request, Response, Router } from "express";
 import ticketService from "./services/ticket.service";
 import { body, param } from "express-validator";
-import { validateRequestHandler, authGuardMiddleware } from "@dnt-ticketing-mvc/common";
+import {
+  validateRequestHandler,
+  authGuardMiddleware,
+} from "@dnt-ticketing-mvc/common";
 
 export default class TicketRouter {
   public readonly router: IRouter = Router();
@@ -43,11 +46,22 @@ export default class TicketRouter {
           .withMessage("Params of ticket ID is invalid"),
         body("title")
           .isString()
-          .notEmpty()
+          .optional()
           .withMessage("You must supply a title")
           .isLength({ min: 6 })
           .withMessage("Length of title is invalid"),
-        body("price").isFloat().withMessage("Price must be a number"),
+        body("price")
+          .optional()
+          .isFloat()
+          .withMessage("Price must be a number"),
+        body("numberOfSeat")
+          .optional()
+          .isInt({ min: 0 })
+          .withMessage("Number of seat must be a number"),
+        body("isLocked")
+          .optional()
+          .isBoolean()
+          .withMessage("isLocked must be a boolean value"),
       ],
       [validateRequestHandler],
       (request: Request, response: Response) =>

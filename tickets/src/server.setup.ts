@@ -14,9 +14,11 @@ import {
   DatabaseConnectionError,
   errorHandler,
 } from "@dnt-ticketing-mvc/common";
+import { Stan } from "node-nats-streaming";
 import { natsInstance } from "./nats-wrapper";
 import { ENV } from "./env";
 import { OrderCreatedListener } from "./events/listener/order-created.event";
+import { OrderCancelledListener } from "./events/listener/order-cancelled.event";
 
 export default class ServerSetup {
   private app!: express.Express;
@@ -84,10 +86,16 @@ export default class ServerSetup {
       });
       process.on("SIGINT", () => natsInstance.client.close());
       process.on("SIGTERM", () => natsInstance.client.close());
-      new OrderCreatedListener(natsInstance.client).listen();
+      // listener trigger event
+      this._composeEventListener(natsInstance.client);
     } catch (error) {
       console.error(error);
     }
+  }
+
+  private _composeEventListener(client: Stan): void {
+    new OrderCreatedListener(client).listen();
+    new OrderCancelledListener(client).listen();
   }
 
   private _handleGracefulShutdown = (): void => {

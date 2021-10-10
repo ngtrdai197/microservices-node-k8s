@@ -4,6 +4,8 @@ export interface ITicket {
   title: string;
   price: number;
   version: number;
+  numberOfSeat: number;
+  isLocked: boolean;
 }
 export interface ITicketDoc extends mongoose.Document, ITicket {
   isReserved(userId: string): Promise<boolean>;

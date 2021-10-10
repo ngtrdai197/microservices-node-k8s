@@ -17,18 +17,24 @@ export class TicketUpdatedListener extends Listener<
   public readonly queueGroupName = QUEUE_GROUP_NAME.GROUP_ORDERS;
 
   public async onMessage(data: ITicketUpdated, msg: Message) {
-    console.log(`${TicketUpdatedListener.name} =>`, data);
-    const ticket = await ticketModel.findByEvent({
-      id: data.id,
-      version: data.version,
-    });
-    if (!ticket) {
-      throw new NotFoundError("Ticket not exists");
-    }
-    const { price, title } = data;
-    ticket.set({ price, title });
-    await ticket.save();
+    try {
+      console.log(`${TicketUpdatedListener.name} =>`, data);
+      const ticket = await ticketModel.findByEvent({
+        id: data.id,
+        version: data.version,
+      });
+      if (!ticket) {
+        msg.ack();
+        throw new NotFoundError("Ticket not exists");
+      }
+      const { price, title, numberOfSeat, isLocked } = data;
+      ticket.set({ price, title, numberOfSeat, isLocked });
+      await ticket.save();
 
-    msg.ack();
+      msg.ack();
+    } catch (error) {
+      console.log("error :>> ", error);
+      msg.ack();
+    }
   }
 }
