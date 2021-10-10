@@ -21,6 +21,8 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: JWT_SECRET_KEY
+            - name: MONGODB_URL
+              value: mongodb://auth-mongo-clusterip-srv:27017/mcsv-ticketing-auth
 ---
 apiVersion: v1
 kind: Service
