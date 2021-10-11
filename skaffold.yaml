@@ -43,3 +43,13 @@ build:
         manual:
           - dest: .
             src: .
+
+    - image: ngtrdai197/microservices_ticketing_expiration
+      context: expiration
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - dest: .
+            src: .
+
