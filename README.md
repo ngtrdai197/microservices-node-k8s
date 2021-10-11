@@ -8,3 +8,5 @@ Simple project to learn microservices and k8s 🚀
 [![deploy-tickets](https://github.com/ngtrdai197/microservices-node-k8s/actions/workflows/deploy-tickets.yml/badge.svg?branch=master)](https://github.com/ngtrdai197/microservices-node-k8s/actions/workflows/deploy-tickets.yml)
 
 [![deploy-orders](https://github.com/ngtrdai197/microservices-node-k8s/actions/workflows/deploy-orders.yml/badge.svg?branch=master)](https://github.com/ngtrdai197/microservices-node-k8s/actions/workflows/deploy-orders.yml)
+
+[![deploy-expiration](https://github.com/ngtrdai197/microservices-node-k8s/actions/workflows/deploy-expiration.yml/badge.svg?branch=master)](https://github.com/ngtrdai197/microservices-node-k8s/actions/workflows/deploy-expiration.yml)
