@@ -7,8 +7,9 @@ import {
 } from "@dnt-ticketing-mvc/common";
 
 export default class OrderRouter {
-  public readonly router: IRouter = Router();
   private static instance: OrderRouter;
+  public readonly router: IRouter = Router();
+
   constructor() {
     this.initRouter();
   }
@@ -35,12 +36,12 @@ export default class OrderRouter {
         orderService.createOrder(request, response)
     );
     this.router.put(
-      "/:ticketId",
+      "/:orderId",
       [authGuardMiddleware],
       [
-        param("ticketId")
+        param("orderId")
           .isMongoId()
-          .withMessage("Params of ticket ID is invalid"),
+          .withMessage("Params of order ID is invalid"),
         body("status")
           .isString()
           .notEmpty()

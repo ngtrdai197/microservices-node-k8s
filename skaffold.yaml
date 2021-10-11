@@ -53,3 +53,12 @@ build:
           - dest: .
             src: .
 
+    - image: ngtrdai197/microservices_ticketing_payments
+      context: payments
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - dest: .
+            src: .
+

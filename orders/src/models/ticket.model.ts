@@ -39,7 +39,6 @@ ticketSchema.set("versionKey", "version");
 ticketSchema.plugin(updateIfCurrentPlugin);
 
 ticketSchema.statics.findByEvent = (event: { id: string; version: number }) => {
-  console.log("event.version :>> ", event.version);
   return ticketModel.findOne({
     _id: event.id,
     version: event.version - 1,
