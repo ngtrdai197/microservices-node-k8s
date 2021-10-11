@@ -33,6 +33,8 @@ class TicketService {
       title: ticket.title,
       price: ticket.price,
       version: ticket.version,
+      numberOfSeat: ticket.numberOfSeat,
+      isLocked: ticket.isLocked,
     });
     return resp.status(201).jsonp({ statusCode: 201, data: ticket });
   }
@@ -47,17 +49,18 @@ class TicketService {
     if (ticket.userId !== req.currentUser?.id) {
       throw new NotAuthorizedError("You do not have permission to do this");
     }
-    await ticket
-      .set({
-        title: req.body.title,
-        price: req.body.price,
-      })
-      .save();
+    const body = req.body;
+    Object.keys(body).forEach(
+      (key) => body[key] === undefined && delete body[key]
+    );
+    await ticket.set({ ...body }).save();
     await new TicketUpdatedPublisher(natsInstance.client).publish({
       id: ticket.id,
       title: ticket.title,
       price: ticket.price,
       version: ticket.version,
+      numberOfSeat: ticket.numberOfSeat,
+      isLocked: ticket.isLocked,
     });
     return resp.status(200).jsonp({
       statusCode: 200,

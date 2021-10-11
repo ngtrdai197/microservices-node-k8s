@@ -16,9 +16,14 @@ const ticketSchema = new mongoose.Schema(
       type: Number,
       require: true,
     },
-    orderId: {
-      type: String,
-    }
+    numberOfSeat: {
+      type: Number,
+      default: 0,
+    },
+    isLocked: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: {
@@ -30,8 +35,7 @@ const ticketSchema = new mongoose.Schema(
     },
   }
 );
-ticketSchema.set('versionKey', 'version');
-
+ticketSchema.set("versionKey", "version");
 ticketSchema.plugin(updateIfCurrentPlugin);
 
 ticketSchema.statics.build = (attrs: ITicketDoc) => new ticketModel(attrs);

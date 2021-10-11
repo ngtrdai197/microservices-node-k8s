@@ -10,10 +10,17 @@ import cookieSession from "cookie-session";
 import * as http from "http";
 
 import orderRouter from "./router";
-import { DatabaseConnectionError, errorHandler } from "@dnt-ticketing-mvc/common";
+import {
+  DatabaseConnectionError,
+  errorHandler,
+} from "@dnt-ticketing-mvc/common";
 import { natsInstance } from "./nats-wrapper";
 import { ENV } from "./env";
-import { TicketUpdatedListener, TicketCreatedListener } from "./events";
+import {
+  ExpirationCompleteListenerEvent,
+  TicketCreatedListener,
+  TicketUpdatedListener,
+} from "./events";
 
 export default class ServerSetup {
   private app!: express.Express;
@@ -84,6 +91,7 @@ export default class ServerSetup {
 
       new TicketCreatedListener(natsInstance.client).listen();
       new TicketUpdatedListener(natsInstance.client).listen();
+      new ExpirationCompleteListenerEvent(natsInstance.client).listen();
     } catch (error) {
       console.error(error);
     }

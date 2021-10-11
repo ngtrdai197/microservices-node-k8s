@@ -15,6 +15,14 @@ const ticketSchema = new mongoose.Schema(
       require: true,
       min: 0,
     },
+    numberOfSeat: {
+      type: Number,
+      default: 0,
+    },
+    isLocked: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: {
@@ -31,6 +39,7 @@ ticketSchema.set("versionKey", "version");
 ticketSchema.plugin(updateIfCurrentPlugin);
 
 ticketSchema.statics.findByEvent = (event: { id: string; version: number }) => {
+  console.log("event.version :>> ", event.version);
   return ticketModel.findOne({
     _id: event.id,
     version: event.version - 1,

@@ -1,7 +1,7 @@
 import {
+  ConflictRequestError,
   NotAuthorizedError,
   NotFoundError,
-  ConflictRequestError,
   ORDER_STATUS,
 } from "@dnt-ticketing-mvc/common";
 import { OrderCreatedPublisher } from "../events/publisher/order-created.event";
@@ -13,7 +13,8 @@ import { ticketModel } from "../models/ticket.model";
 
 class OrderService {
   private static instance: OrderService;
-  private readonly EXPIRATION_ORDER_BY_SECONDS = 15 * 60;
+  private readonly EXPIRATION_ORDER_BY_SECONDS = 60;
+
   constructor() {}
 
   public static getInstance(): OrderService {
@@ -74,7 +75,7 @@ class OrderService {
     }
     await order
       .set({
-        status: req.body.title,
+        status: req.body.status,
       })
       .save();
     return resp.status(200).jsonp({
@@ -94,7 +95,7 @@ class OrderService {
     return resp.status(200).jsonp({
       statusCode: 200,
       data: null,
-      mesg: "Deleted order successfully",
+      msg: "Deleted order successfully",
     });
   }
 

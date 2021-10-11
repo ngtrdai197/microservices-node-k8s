@@ -3,18 +3,19 @@ import {
   QUEUE_GROUP_NAME,
   Subjects,
   Listener,
-  OrderCreatedEvent,
+  OrderCancelledEvent,
   IOrderCreated,
   NotFoundError,
+  IOrderCancelled,
 } from "@dnt-ticketing-mvc/common";
 import { ticketModel } from "../../models/ticket.model";
 import { TicketUpdatedPublisher } from "../publisher/ticket-updated.event";
 
-export class OrderCreatedListener extends Listener<
-  OrderCreatedEvent,
-  IOrderCreated
+export class OrderCancelledListener extends Listener<
+  OrderCancelledEvent,
+  IOrderCancelled
 > {
-  public readonly subject = Subjects.OrderCreated;
+  public readonly subject = Subjects.OrderCancelled;
   public readonly queueGroupName = QUEUE_GROUP_NAME.GROUP_TICKETS;
 
   public async onMessage(data: IOrderCreated, msg: Message) {
@@ -24,7 +25,7 @@ export class OrderCreatedListener extends Listener<
         "Can not found ticket with ID: " + data.ticket.id
       );
     }
-    await ticket.set({ orderId: data.id }).save();
+    await ticket.set({ orderId: undefined }).save();
     await new TicketUpdatedPublisher(this.client).publish({
       id: ticket.id,
       title: ticket.title,

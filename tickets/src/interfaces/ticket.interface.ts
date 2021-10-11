@@ -5,11 +5,13 @@ export interface ITicket {
   price: number;
   userId: string;
   version: number;
-  orderId?: string;
+  numberOfSeat: number;
+  isLocked: boolean;
 }
 export interface ITicketDoc extends mongoose.Document, ITicket {}
 
-export interface ITicketAttrs extends ITicket {}
+export interface ITicketAttrs
+  extends Omit<ITicket, "version" | "isLocked" | "numberOfSeat"> {}
 
 export interface ITicketModel extends mongoose.Model<ITicketDoc> {
   build(attrs: ITicketAttrs): ITicketDoc;

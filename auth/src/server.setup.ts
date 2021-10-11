@@ -6,12 +6,15 @@ import "express-async-errors";
  */
 import { json } from "body-parser";
 import mongoose from "mongoose";
-import cookieSession from 'cookie-session';
+import cookieSession from "cookie-session";
 import * as http from "http";
 
 import AuthRouter from "./router";
-import { errorHandler } from "@dnt-ticketing-mvc/common";
-import { DatabaseConnectionError } from "@dnt-ticketing-mvc/common";
+import {
+  DatabaseConnectionError,
+  errorHandler,
+} from "@dnt-ticketing-mvc/common";
+import { ENV } from "./env";
 
 export default class ServerSetup {
   private app!: express.Express;
@@ -28,7 +31,7 @@ export default class ServerSetup {
     this.app.use(
       cookieSession({
         signed: false,
-        secure: process.env.NODE_ENV !== 'test',
+        secure: process.env.NODE_ENV !== "test",
       })
     );
     this.connectDatabase();
@@ -42,15 +45,12 @@ export default class ServerSetup {
 
   protected async connectDatabase(): Promise<void> {
     try {
-      await mongoose.connect(
-        "mongodb://auth-mongo-clusterip-srv:27017/mcsv-ticketing-auth",
-        {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-          useCreateIndex: true,
-          useFindAndModify: true,
-        }
-      );
+      await mongoose.connect(ENV.MONGODB_URL!, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+        useFindAndModify: true,
+      });
       console.log("Auth Service - Connected to MongoDB successfully 🤘🤘🤘");
     } catch (error) {
       console.log(error);
