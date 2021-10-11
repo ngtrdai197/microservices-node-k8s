@@ -7,8 +7,10 @@ import {
   QUEUE_GROUP_NAME,
   Subjects,
 } from "@dnt-ticketing-mvc/common";
+import { ITicketDoc } from "../../interfaces/ticket.interface";
 import { Message } from "node-nats-streaming";
 import { orderModel } from "../../models/order.model";
+import { OrderUpdatedPublisher } from "../publisher/order-updated-publisher.event";
 
 export class ExpirationCompleteListenerEvent extends Listener<
   ExpirationCompleteEvent,
@@ -32,6 +34,16 @@ export class ExpirationCompleteListenerEvent extends Listener<
       )
     ) {
       await order.set({ status: ORDER_STATUS.CANCELLED }).save();
+      order.populate(["ticket"]);
+      const ticket = order.ticket as ITicketDoc;
+      await new OrderUpdatedPublisher(this.client).publish({
+        expiresAt: order.expiresAt,
+        id: order.id,
+        status: order.status,
+        ticket: { id: ticket.id, price: ticket.price },
+        userId: order.userId,
+        version: order.version,
+      });
     }
     msg.ack();
   }

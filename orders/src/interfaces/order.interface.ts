@@ -19,7 +19,3 @@ export interface IOrderAttrs extends OrderBuildType {}
 export interface IOrderModel extends mongoose.Model<IOrderDoc> {
   build(attrs: IOrderAttrs): IOrderDoc;
 }
-
-export interface IOrderCancelledEvent {
-  
-}

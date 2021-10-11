@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "target": "es5",
+    "module": "commonjs",
+    "outDir": "./build",
+    "strict": true,
+    "types": [
+      "node"
+    ],
+    "baseUrl": "./src",
+    "paths": {},
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
+}

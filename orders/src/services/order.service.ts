@@ -10,6 +10,8 @@ import { natsInstance } from "../nats-wrapper";
 import { IRequest } from "../interfaces/common.interface";
 import { orderModel } from "../models/order.model";
 import { ticketModel } from "../models/ticket.model";
+import { OrderUpdatedPublisher } from "../events/publisher/order-updated-publisher.event";
+import { ITicketDoc } from "../interfaces/ticket.interface";
 
 class OrderService {
   private static instance: OrderService;
@@ -64,7 +66,10 @@ class OrderService {
   }
 
   public async editOrder(req: Request, resp: Response) {
-    const order = await orderModel.findById(req.params.orderId);
+    const order = await orderModel
+      .findById(req.params.orderId)
+      .populate(["ticket"])
+      .exec();
     if (!order) {
       throw new NotFoundError(
         `Cannot found order with ID: ${req.params.orderId}`
@@ -78,6 +83,15 @@ class OrderService {
         status: req.body.status,
       })
       .save();
+    const ticket = order.ticket as ITicketDoc;
+    await new OrderUpdatedPublisher(natsInstance.client).publish({
+      expiresAt: order.expiresAt,
+      id: order.id,
+      status: order.status,
+      ticket: { id: ticket.id, price: ticket.price },
+      userId: order.userId,
+      version: order.version,
+    });
     return resp.status(200).jsonp({
       statusCode: 200,
       data: order,
