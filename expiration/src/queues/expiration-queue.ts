@@ -17,7 +17,7 @@ const expirationQueue = new Queue<IPayload>(EXPIRATION_QUEUE, {
 
 expirationQueue.process(async (job) => {
     console.log(
-        `Handling an expiration:complete event for orderId: ${job.data.orderId} and jobId: ${job.id}`,
+        `[${EXPIRATION_QUEUE}]: Handling an expiration:complete event for orderId: ${job.data.orderId} and jobId: ${job.id}`,
     );
     await new ExpirationCompletePublisherEvent(natsInstance.client).publish({
         orderId: job.data.orderId,
