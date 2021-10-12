@@ -5,14 +5,12 @@ import {
     QUEUE_GROUP_NAME,
     Subjects,
 } from "@dnt-ticketing-mvc/common";
-import { Message } from "node-nats-streaming";
+import {Message} from "node-nats-streaming";
 import expirationQueue from "../../queues/expiration-queue";
 
-export class OrderCreatedListenerEvent extends Listener<
-    OrderCreatedEvent,
-    IOrderCreated
-> {
-    public subject: Subjects.OrderCreated = Subjects.OrderCreated;
+export class OrderPaidSuccessfulListenerEvent extends Listener<OrderCreatedEvent,
+    IOrderCreated> {
+    public subject: Subjects.OrderCreated = Subjects.;
     public queueGroupName: QUEUE_GROUP_NAME = QUEUE_GROUP_NAME.GROUP_EXPIRATION;
 
     public async onMessage(data: IOrderCreated, msg: Message): Promise<void> {
@@ -26,7 +24,7 @@ export class OrderCreatedListenerEvent extends Listener<
                 } minutes and after it will be process the job`,
             );
             await expirationQueue.add(
-                `Expiration-Order-${data.id}-${data.ticket.id}`,
+                `Expiration-Order-${data.id}`,
                 {
                     orderId: data.id,
                 },
