@@ -20,7 +20,9 @@ import {
   ExpirationCompleteListenerEvent,
   TicketCreatedListener,
   TicketUpdatedListener,
+  PaymentCompleteListenerEvent,
 } from "./events";
+import { Stan } from "node-nats-streaming";
 
 export default class ServerSetup {
   private app!: express.Express;
@@ -31,12 +33,23 @@ export default class ServerSetup {
     this.init();
   }
 
+  private static _composeEventListener(client: Stan): void {
+    new TicketCreatedListener(client).listen();
+    new TicketUpdatedListener(client).listen();
+    new ExpirationCompleteListenerEvent(client).listen();
+    new PaymentCompleteListenerEvent(client).listen();
+  }
+
   public start(): void {
     this.server = this.app.listen(this.PORT, () =>
       console.log(`Orders Service listening on port: 3000 ! 🚀🚀🚀`)
     );
     process.on("SIGTERM", this._handleGracefulShutdown);
     process.on("SIGTTIN", this._handleGracefulShutdown);
+  }
+
+  public _setupRouting(): void {
+    this.app.use(this.prefix + "/orders", orderRouter.getInstance().router);
   }
 
   private init(): void {
@@ -52,10 +65,6 @@ export default class ServerSetup {
     this._connectNats();
     this._setupRouting();
     this.app.use(errorHandler);
-  }
-
-  public _setupRouting(): void {
-    this.app.use(this.prefix + "/orders", orderRouter.getInstance().router);
   }
 
   private async _connectDatabase(): Promise<void> {
@@ -89,9 +98,7 @@ export default class ServerSetup {
       process.on("SIGINT", () => natsInstance.client.close());
       process.on("SIGTERM", () => natsInstance.client.close());
 
-      new TicketCreatedListener(natsInstance.client).listen();
-      new TicketUpdatedListener(natsInstance.client).listen();
-      new ExpirationCompleteListenerEvent(natsInstance.client).listen();
+      ServerSetup._composeEventListener(natsInstance.client);
     } catch (error) {
       console.error(error);
     }

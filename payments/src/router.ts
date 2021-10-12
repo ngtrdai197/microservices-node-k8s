@@ -30,6 +30,10 @@ export default class PaymentsRouter {
                     .isString()
                     .notEmpty()
                     .withMessage("Order Id must be supplied"),
+                body("stripeToken")
+                    .isString()
+                    .notEmpty()
+                    .withMessage("Stripe token must be supplied"),
             ],
             [validateRequestHandler],
             (request: Request, response: Response) =>
