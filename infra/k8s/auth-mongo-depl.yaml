@@ -12,9 +12,16 @@ spec:
       labels:
         app: auth-mongo
     spec:
+      volumes:
+        - name: auth-pv-storage
+          persistentVolumeClaim:
+            claimName: auth-mongo-pvc
       containers:
         - name: auth-mongo
           image: mongo
+          volumeMounts:
+            - mountPath: "/data/db"
+              name: auth-pv-storage
 ---
 apiVersion: v1
 kind: Service
