@@ -9,6 +9,8 @@ import {
 } from "@dnt-ticketing-mvc/common";
 import stripe from "../utils/stripe";
 import { Stripe } from "stripe";
+import { PaymentCompletePublisherEvent } from "../events/publisher/payment-complete-publisher.event";
+import { natsInstance } from "../nats-wrapper";
 
 class PaymentsService {
     private static instance: PaymentsService;
@@ -48,6 +50,9 @@ class PaymentsService {
                 source: stripeToken,
                 description: "Payment for order: " + order.id,
                 //customer: order.userId, // TODO: create customer collection to save customer from stripe later
+            });
+            new PaymentCompletePublisherEvent(natsInstance.client).publish({
+                orderId: order.id,
             });
         } catch (e: any) {
             const error = e as Stripe.StripeInvalidRequestError;

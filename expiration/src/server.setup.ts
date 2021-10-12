@@ -1,7 +1,8 @@
-import {Stan} from "node-nats-streaming";
-import {natsInstance} from "./nats-wrapper";
-import {ENV} from "./env";
-import {OrderCreatedListenerEvent} from "./events/listener/order-created-listener.event";
+import { Stan } from "node-nats-streaming";
+import { natsInstance } from "./nats-wrapper";
+import { ENV } from "./env";
+import { OrderCreatedListenerEvent } from "./events/listener/order-created-listener.event";
+import { OrderPaidSucceedListenerEvent } from "./events/listener/order-paid-succeed-listener.event";
 
 export default class ServerSetup {
     constructor() {
@@ -9,7 +10,8 @@ export default class ServerSetup {
     }
 
     private static _composeEventListener(client: Stan): void {
-        new OrderCreatedListenerEvent(client).listen()
+        new OrderCreatedListenerEvent(client).listen();
+        new OrderPaidSucceedListenerEvent(client).listen();
     }
 
     private init(): void {

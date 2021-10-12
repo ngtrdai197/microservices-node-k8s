@@ -23,28 +23,28 @@ export class ExpirationCompleteListenerEvent extends Listener<
     data: IExpirationComplete,
     msg: Message
   ): Promise<void> {
-    const order = await orderModel.findById(data.orderId).exec();
+    const order = await orderModel
+      .findById(data.orderId)
+      .populate(["ticket"])
+      .exec();
     if (!order) {
       msg.ack();
       throw new NotFoundError("Order does not exist.");
     }
-    if (
-      [ORDER_STATUS.CREATED, ORDER_STATUS.AWAITING_PAYMENT].includes(
-        order.status
-      )
-    ) {
-      await order.set({ status: ORDER_STATUS.CANCELLED }).save();
-      order.populate(["ticket"]);
-      const ticket = order.ticket as ITicketDoc;
-      await new OrderUpdatedPublisher(this.client).publish({
-        expiresAt: order.expiresAt,
-        id: order.id,
-        status: order.status,
-        ticket: { id: ticket.id, price: ticket.price },
-        userId: order.userId,
-        version: order.version,
-      });
+
+    if (order.status === ORDER_STATUS.COMPLETE) {
+      return msg.ack();
     }
+    await order.set({ status: ORDER_STATUS.CANCELLED }).save();
+    const ticket = order.ticket as ITicketDoc;
+    await new OrderUpdatedPublisher(this.client).publish({
+      expiresAt: order.expiresAt,
+      id: order.id,
+      status: order.status,
+      ticket: { id: ticket.id, price: ticket.price },
+      userId: order.userId,
+      version: order.version,
+    });
     msg.ack();
   }
 }
