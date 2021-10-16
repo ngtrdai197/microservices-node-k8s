@@ -23,7 +23,7 @@ export default class AuthRouter {
 
   private initRouter(): void {
     this.router.get(
-      "/currentuser",
+      "/currentUser",
       [authGuardMiddleware],
       (request: IRequest, response: Response) => {
         return response

@@ -12,9 +12,16 @@ spec:
       labels:
         app: tickets-mongo
     spec:
+      volumes:
+        - name: tickets-pv-storage
+          persistentVolumeClaim:
+            claimName: tickets-mongo-pvc
       containers:
         - name: tickets-mongo
           image: mongo
+          volumeMounts:
+            - mountPath: "/data/db"
+              name: tickets-pv-storage
 ---
 apiVersion: v1
 kind: Service
